@@ -1,6 +1,7 @@
 import { resolve } from 'path';
 import { config } from 'dotenv';
 import { Octokit } from '@octokit/rest';
+import * as moment from 'moment-timezone';
 
 import githubQuery from './githubQuery';
 import generateBarChart from './generateBarChart';
@@ -47,13 +48,13 @@ interface IRepo {
   let daytime = 0; // 12 - 18
   let evening = 0; // 18 - 24
   let night = 0; // 0 - 6
-
+  
   committedTimeResponseMap.forEach(committedTimeResponse => {
+    
     committedTimeResponse?.data?.repository?.ref?.target?.history?.edges.forEach(edge => {
       const committedDate = edge?.node?.committedDate;
-      const timeString = new Date(committedDate).toLocaleTimeString([ process.env.LOCALE, 'en-US' ], { hour12: false });
-      const hour = +(timeString.split(':')[0]);
-
+      const hour = Number.parseInt(moment(committedDate).tz('Asia/Seoul').format('H'));
+      
       /**
        * voting and counting
        */
